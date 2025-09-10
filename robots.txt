@@ -1,0 +1,32 @@
+# Robots.txt para OdontoEden
+# https://www.odontoeden.com/robots.txt
+
+User-agent: *
+Allow: /
+
+# Permitir acceso a recursos importantes
+Allow: /img/
+Allow: /styles.css
+Allow: /script.js
+Allow: /google-reviews.js
+
+# Bloquear archivos no necesarios para SEO
+Disallow: /*.pdf$
+Disallow: /admin/
+Disallow: /private/
+
+# Sitemap
+Sitemap: https://www.odontoeden.com/sitemap.xml
+
+# Tiempo de rastreo para no sobrecargar el servidor
+Crawl-delay: 1
+
+# Específico para Googlebot
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+# Específico para Bingbot
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+    
+    <!-- Página principal -->
+    <url>
+        <loc>https://www.odontoeden.com/</loc>
+        <lastmod>2025-09-10</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>1.0</priority>
+        <image:image>
+            <image:loc>https://www.odontoeden.com/img/logo.png</image:loc>
+            <image:title>OdontoEden - Clínica Dental en Quito</image:title>
+        </image:image>
+        <image:image>
+            <image:loc>https://www.odontoeden.com/img/card1.png</image:loc>
+            <image:title>Instalaciones modernas OdontoEden</image:title>
+        </image:image>
+        <image:image>
+            <image:loc>https://www.odontoeden.com/img/card2.png</image:loc>
+            <image:title>Tecnología dental avanzada</image:title>
+        </image:image>
+        <image:image>
+            <image:loc>https://www.odontoeden.com/img/card3.png</image:loc>
+            <image:title>Equipo profesional OdontoEden</image:title>
+        </image:image>
+        <image:image>
+            <image:loc>https://www.odontoeden.com/img/card4.png</image:loc>
+            <image:title>Tratamientos especializados</image:title>
+        </image:image>
+        <image:image>
+            <image:loc>https://www.odontoeden.com/img/card6.png</image:loc>
+            <image:title>Resultados exitosos OdontoEden</image:title>
+        </image:image>
+    </url>
+    
+    <!-- Sección Servicios -->
+    <url>
+        <loc>https://www.odontoeden.com/#servicios</loc>
+        <lastmod>2025-09-10</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <!-- Sección Nosotros -->
+    <url>
+        <loc>https://www.odontoeden.com/#nosotros</loc>
+        <lastmod>2025-09-10</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <!-- Sección Galería -->
+    <url>
+        <loc>https://www.odontoeden.com/#galeria</loc>
+        <lastmod>2025-09-10</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    
+    <!-- Sección Testimonios -->
+    <url>
+        <loc>https://www.odontoeden.com/#testimonios</loc>
+        <lastmod>2025-09-10</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    
+    <!-- Sección Contacto -->
+    <url>
+        <loc>https://www.odontoeden.com/#contacto</loc>
+        <lastmod>2025-09-10</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    
+</urlset>
