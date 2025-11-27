@@ -4,19 +4,64 @@ document.addEventListener('DOMContentLoaded', function() {
     const navMenu = document.getElementById('nav-menu');
     const navLinks = document.querySelectorAll('.nav-link');
     const header = document.getElementById('header');
+    const body = document.body;
     
-    // Toggle del menú móvil
-    navToggle.addEventListener('click', function() {
-        navMenu.classList.toggle('active');
-        navToggle.classList.toggle('active');
+    // Toggle del menú móvil mejorado
+    navToggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isActive = navMenu.classList.contains('active');
+        
+        if (isActive) {
+            closeMenu();
+        } else {
+            openMenu();
+        }
     });
+    
+    // Función para abrir el menú
+    function openMenu() {
+        navMenu.classList.add('active');
+        navToggle.classList.add('active');
+        body.classList.add('menu-open');
+    }
+    
+    // Función para cerrar el menú
+    function closeMenu() {
+        navMenu.classList.remove('active');
+        navToggle.classList.remove('active');
+        body.classList.remove('menu-open');
+    }
     
     // Cerrar menú al hacer click en un enlace
     navLinks.forEach(link => {
-        link.addEventListener('click', function() {
-            navMenu.classList.remove('active');
-            navToggle.classList.remove('active');
+        link.addEventListener('click', function(e) {
+            closeMenu();
         });
+    });
+    
+    // Cerrar menú al hacer click fuera (solo en móvil)
+    document.addEventListener('click', function(e) {
+        const isMenuOpen = navMenu.classList.contains('active');
+        const clickedInsideMenu = navMenu.contains(e.target);
+        const clickedToggle = navToggle.contains(e.target);
+        
+        if (isMenuOpen && !clickedInsideMenu && !clickedToggle) {
+            closeMenu();
+        }
+    });
+    
+    // Cerrar menú con tecla ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && navMenu.classList.contains('active')) {
+            closeMenu();
+        }
+    });
+    
+    // Cerrar menú al cambiar de orientación o redimensionar
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768 && navMenu.classList.contains('active')) {
+            closeMenu();
+        }
     });
     
     // Navegación activa según la sección
