@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Contactos - OdontoEden</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #2c5aa0;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        .stat-card i {
+            font-size: 2.5rem;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .stat-card h3 {
+            font-size: 2rem;
+            color: #2c5aa0;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+            transform: translateY(-2px);
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .contacts-table {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        th {
+            padding: 20px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 20px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        tbody tr:hover {
+            background: #f8f9ff;
+            transform: scale(1.01);
+        }
+
+        .contact-row {
+            cursor: pointer;
+        }
+
+        .contact-name {
+            font-weight: 600;
+            color: #2c5aa0;
+        }
+
+        .contact-email {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .contact-phone {
+            color: #27ae60;
+            font-weight: 500;
+        }
+
+        .contact-date {
+            color: #999;
+            font-size: 0.85rem;
+        }
+
+        .contact-message {
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-small {
+            padding: 8px 15px;
+            font-size: 0.85rem;
+        }
+
+        .no-contacts {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .no-contacts i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        @media (max-width: 768px) {
+            .contacts-table {
+                overflow-x: auto;
+            }
+
+            table {
+                min-width: 600px;
+            }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-content h2 {
+            color: #2c5aa0;
+            margin-bottom: 20px;
+        }
+
+        .detail-group {
+            margin-bottom: 20px;
+        }
+
+        .detail-group label {
+            display: block;
+            color: #666;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .detail-group .value {
+            color: #333;
+            font-size: 1rem;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-tooth"></i> Panel de Contactos - OdontoEden</h1>
+            <p>Administra los contactos recibidos desde el formulario web</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <i class="fas fa-users"></i>
+                <h3 id="total-contacts">0</h3>
+                <p>Total Contactos</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-calendar-day"></i>
+                <h3 id="today-contacts">0</h3>
+                <p>Hoy</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-calendar-week"></i>
+                <h3 id="week-contacts">0</h3>
+                <p>Esta Semana</p>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="🔍 Buscar por nombre, email o teléfono...">
+            </div>
+            <button class="btn btn-success" onclick="exportToCSV()">
+                <i class="fas fa-download"></i> Exportar CSV
+            </button>
+            <button class="btn btn-primary" onclick="refreshData()">
+                <i class="fas fa-sync"></i> Actualizar
+            </button>
+            <button class="btn btn-danger" onclick="clearAllContacts()">
+                <i class="fas fa-trash"></i> Limpiar Todo
+            </button>
+        </div>
+
+        <div class="contacts-table">
+            <table id="contacts-table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Email</th>
+                        <th>Teléfono</th>
+                        <th>Mensaje</th>
+                        <th>Fecha</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="contacts-body">
+                    <tr>
+                        <td colspan="6" class="no-contacts">
+                            <i class="fas fa-inbox"></i>
+                            <p>No hay contactos registrados</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal de detalle -->
+    <div class="modal" id="detail-modal">
+        <div class="modal-content">
+            <h2><i class="fas fa-user-circle"></i> Detalle del Contacto</h2>
+            <div id="modal-details"></div>
+            <button class="btn btn-primary" onclick="closeModal()" style="margin-top: 20px;">
+                <i class="fas fa-times"></i> Cerrar
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Cargar contactos
+        function loadContacts() {
+            const contacts = JSON.parse(localStorage.getItem('odontoeden_contacts') || '[]');
+            const tbody = document.getElementById('contacts-body');
+            
+            if (contacts.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="no-contacts">
+                            <i class="fas fa-inbox"></i>
+                            <p>No hay contactos registrados</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            // Ordenar por fecha descendente
+            contacts.sort((a, b) => b.id - a.id);
+
+            tbody.innerHTML = contacts.map(contact => `
+                <tr class="contact-row" onclick="showDetail(${contact.id})">
+                    <td class="contact-name">${contact.user_name}</td>
+                    <td class="contact-email">${contact.user_email}</td>
+                    <td class="contact-phone">${contact.user_phone || '-'}</td>
+                    <td class="contact-message">${contact.message}</td>
+                    <td class="contact-date">${new Date(contact.timestamp).toLocaleString('es-EC')}</td>
+                    <td class="actions">
+                        <button class="btn btn-small btn-success" onclick="event.stopPropagation(); contactWhatsApp('${contact.user_phone || contact.user_name}', '${contact.user_name}')">
+                            <i class="fab fa-whatsapp"></i>
+                        </button>
+                        <button class="btn btn-small btn-danger" onclick="event.stopPropagation(); deleteContact(${contact.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+
+            updateStats(contacts);
+        }
+
+        function updateStats(contacts) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            const weekAgo = new Date();
+            weekAgo.setDate(weekAgo.getDate() - 7);
+
+            const todayCount = contacts.filter(c => new Date(c.timestamp) >= today).length;
+            const weekCount = contacts.filter(c => new Date(c.timestamp) >= weekAgo).length;
+
+            document.getElementById('total-contacts').textContent = contacts.length;
+            document.getElementById('today-contacts').textContent = todayCount;
+            document.getElementById('week-contacts').textContent = weekCount;
+        }
+
+        function showDetail(id) {
+            const contacts = JSON.parse(localStorage.getItem('odontoeden_contacts') || '[]');
+            const contact = contacts.find(c => c.id === id);
+            
+            if (!contact) return;
+
+            const modalDetails = document.getElementById('modal-details');
+            modalDetails.innerHTML = `
+                <div class="detail-group">
+                    <label>Nombre Completo</label>
+                    <div class="value">${contact.user_name}</div>
+                </div>
+                <div class="detail-group">
+                    <label>Email</label>
+                    <div class="value">${contact.user_email}</div>
+                </div>
+                <div class="detail-group">
+                    <label>Teléfono</label>
+                    <div class="value">${contact.user_phone || 'No proporcionado'}</div>
+                </div>
+                <div class="detail-group">
+                    <label>Mensaje</label>
+                    <div class="value">${contact.message}</div>
+                </div>
+                <div class="detail-group">
+                    <label>Fecha de Registro</label>
+                    <div class="value">${contact.date || new Date(contact.timestamp).toLocaleString('es-EC')}</div>
+                </div>
+            `;
+
+            document.getElementById('detail-modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('detail-modal').classList.remove('active');
+        }
+
+        function deleteContact(id) {
+            if (!confirm('¿Estás seguro de eliminar este contacto?')) return;
+
+            const contacts = JSON.parse(localStorage.getItem('odontoeden_contacts') || '[]');
+            const filtered = contacts.filter(c => c.id !== id);
+            localStorage.setItem('odontoeden_contacts', JSON.stringify(filtered));
+            loadContacts();
+        }
+
+        function clearAllContacts() {
+            if (!confirm('¿Estás seguro de eliminar TODOS los contactos? Esta acción no se puede deshacer.')) return;
+            
+            localStorage.removeItem('odontoeden_contacts');
+            loadContacts();
+        }
+
+        function contactWhatsApp(phone, name) {
+            const message = `Hola ${name}, te contacto desde OdontoEden.`;
+            const phoneNumber = phone.replace(/\D/g, '');
+            const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+            window.open(url, '_blank');
+        }
+
+        function exportToCSV() {
+            const contacts = JSON.parse(localStorage.getItem('odontoeden_contacts') || '[]');
+            
+            if (contacts.length === 0) {
+                alert('No hay contactos para exportar');
+                return;
+            }
+
+            const csv = [
+                ['ID', 'Nombre', 'Email', 'Teléfono', 'Mensaje', 'Fecha'].join(','),
+                ...contacts.map(c => [
+                    c.id,
+                    `"${c.user_name}"`,
+                    c.user_email,
+                    c.user_phone || '',
+                    `"${c.message}"`,
+                    new Date(c.timestamp).toLocaleString('es-EC')
+                ].join(','))
+            ].join('\n');
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `odontoeden_contactos_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+        }
+
+        function refreshData() {
+            loadContacts();
+        }
+
+        // Búsqueda
+        document.getElementById('search-input').addEventListener('input', function(e) {
+            const search = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('.contact-row');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(search) ? '' : 'none';
+            });
+        });
+
+        // Cerrar modal con ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        // Cargar al inicio
+        loadContacts();
+    </script>
+</body>
+</html>

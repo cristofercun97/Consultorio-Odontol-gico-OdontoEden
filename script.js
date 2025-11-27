@@ -146,63 +146,262 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Manejo del formulario de contacto
+    // Manejo del formulario de contacto con EmailJS
     function handleContactForm() {
         const contactForm = document.querySelector('.contact-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const btnText = submitBtn.querySelector('.btn-text');
+        const btnLoading = submitBtn.querySelector('.btn-loading');
+        const formMessage = document.getElementById('form-message');
+        
+        // Inicializar EmailJS
+        // IMPORTANTE: Reemplaza estos valores con los tuyos de EmailJS
+        const EMAILJS_CONFIG = {
+            publicKey: 'TU_PUBLIC_KEY',  // Obtener de EmailJS Dashboard
+            serviceID: 'TU_SERVICE_ID',   // Ej: 'service_abc123'
+            templateID: 'TU_TEMPLATE_ID'  // Ej: 'template_xyz789'
+        };
         
         contactForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Aquí puedes agregar la lógica para enviar el formulario
-            // Por ejemplo, usando fetch() para enviar a un servidor
+            // Deshabilitar botón
+            submitBtn.disabled = true;
+            btnText.style.display = 'none';
+            btnLoading.style.display = 'inline-block';
+            formMessage.style.display = 'none';
             
-            // Simulación de envío exitoso
-            showNotification('¡Mensaje enviado exitosamente! Nos pondremos en contacto contigo pronto.', 'success');
+            // Obtener datos del formulario
+            const formData = {
+                user_name: contactForm.querySelector('[name="user_name"]').value,
+                user_email: contactForm.querySelector('[name="user_email"]').value,
+                user_phone: contactForm.querySelector('[name="user_phone"]').value,
+                message: contactForm.querySelector('[name="message"]').value,
+                date: new Date().toLocaleString('es-EC', { 
+                    timeZone: 'America/Guayaquil',
+                    dateStyle: 'full',
+                    timeStyle: 'short'
+                })
+            };
             
-            // Limpiar formulario
-            contactForm.reset();
+            // MÉTODO 1: EmailJS (Recomendado - Requiere configuración)
+            if (typeof emailjs !== 'undefined' && EMAILJS_CONFIG.publicKey !== 'TU_PUBLIC_KEY') {
+                emailjs.init(EMAILJS_CONFIG.publicKey);
+                
+                emailjs.send(EMAILJS_CONFIG.serviceID, EMAILJS_CONFIG.templateID, formData)
+                    .then(function(response) {
+                        console.log('SUCCESS!', response.status, response.text);
+                        showSuccess();
+                        saveToLocalStorage(formData);
+                        contactForm.reset();
+                    }, function(error) {
+                        console.log('FAILED...', error);
+                        showError('Hubo un error al enviar el mensaje. Por favor, intenta nuevamente o contáctanos por WhatsApp.');
+                    })
+                    .finally(function() {
+                        resetButton();
+                    });
+            } 
+            // MÉTODO 2: Guardar localmente (Temporal - No requiere configuración)
+            else {
+                // Simular envío
+                setTimeout(function() {
+                    saveToLocalStorage(formData);
+                    showSuccess();
+                    contactForm.reset();
+                    resetButton();
+                    
+                    // Opcional: Redirigir a WhatsApp
+                    setTimeout(function() {
+                        const whatsappMessage = `Hola OdontoEden, mi nombre es ${formData.user_name}. ${formData.message}`;
+                        const whatsappURL = `https://wa.me/+593958882566?text=${encodeURIComponent(whatsappMessage)}`;
+                        window.open(whatsappURL, '_blank');
+                    }, 2000);
+                }, 1000);
+            }
         });
+        
+        function showSuccess() {
+            formMessage.textContent = '✅ ¡Mensaje enviado exitosamente! Nos pondremos en contacto contigo pronto.';
+            formMessage.className = 'form-message success';
+            formMessage.style.display = 'block';
+            
+            // Mostrar notificación flotante
+            showNotification('¡Formulario enviado correctamente! Gracias por contactarnos. Te responderemos pronto. 📧', 'success');
+        }
+        
+        function showError(message) {
+            formMessage.textContent = '❌ ' + message;
+            formMessage.className = 'form-message error';
+            formMessage.style.display = 'block';
+        }
+        
+        function resetButton() {
+            submitBtn.disabled = false;
+            btnText.style.display = 'inline-block';
+            btnLoading.style.display = 'none';
+        }
+        
+        // Guardar en LocalStorage para respaldo
+        function saveToLocalStorage(data) {
+            try {
+                const contacts = JSON.parse(localStorage.getItem('odontoeden_contacts') || '[]');
+                contacts.push({
+                    ...data,
+                    id: Date.now(),
+                    timestamp: new Date().toISOString()
+                });
+                localStorage.setItem('odontoeden_contacts', JSON.stringify(contacts));
+                console.log('✅ Contacto guardado localmente:', data);
+            } catch (error) {
+                console.error('Error guardando en localStorage:', error);
+            }
+        }
     }
     
-    // Función para mostrar notificaciones
+    // Función para mostrar notificaciones mejorada
     function showNotification(message, type = 'info') {
+        // Remover notificación anterior si existe
+        const existingNotification = document.querySelector('.notification');
+        if (existingNotification) {
+            existingNotification.remove();
+        }
+
         const notification = document.createElement('div');
         notification.className = `notification notification-${type}`;
-        notification.textContent = message;
+        
+        // Iconos según el tipo
+        const icons = {
+            success: '<i class="fas fa-check-circle"></i>',
+            error: '<i class="fas fa-exclamation-circle"></i>',
+            info: '<i class="fas fa-info-circle"></i>',
+            warning: '<i class="fas fa-exclamation-triangle"></i>'
+        };
+        
+        notification.innerHTML = `
+            <div class="notification-content">
+                <div class="notification-icon">${icons[type] || icons.info}</div>
+                <div class="notification-message">${message}</div>
+                <button class="notification-close" onclick="this.parentElement.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="notification-progress"></div>
+        `;
         
         // Estilos para la notificación
         notification.style.cssText = `
             position: fixed;
             top: 100px;
             right: 20px;
-            background: ${type === 'success' ? '#4CAF50' : '#2196F3'};
+            min-width: 320px;
+            max-width: 450px;
+            background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : type === 'warning' ? '#f59e0b' : '#3b82f6'};
             color: white;
-            padding: 15px 20px;
-            border-radius: 5px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            z-index: 9999;
-            transform: translateX(400px);
-            transition: transform 0.3s ease;
-            max-width: 300px;
-            word-wrap: break-word;
+            padding: 0;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            z-index: 10000;
+            transform: translateX(500px);
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            overflow: hidden;
+            animation: slideInRight 0.4s ease forwards;
         `;
         
         document.body.appendChild(notification);
         
-        // Mostrar notificación
+        // Animar entrada
         setTimeout(() => {
             notification.style.transform = 'translateX(0)';
         }, 100);
         
-        // Ocultar notificación después de 4 segundos
+        // Barra de progreso
+        const progressBar = notification.querySelector('.notification-progress');
+        progressBar.style.cssText = `
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.5);
+            width: 100%;
+            transform-origin: left;
+            animation: progressBar 5s linear forwards;
+        `;
+        
+        // Ocultar notificación después de 5 segundos
         setTimeout(() => {
-            notification.style.transform = 'translateX(400px)';
+            notification.style.transform = 'translateX(500px)';
             setTimeout(() => {
                 if (notification.parentNode) {
                     notification.parentNode.removeChild(notification);
                 }
-            }, 300);
-        }, 4000);
+            }, 400);
+        }, 5000);
+        
+        // Agregar estilos CSS dinámicos si no existen
+        if (!document.getElementById('notification-styles')) {
+            const style = document.createElement('style');
+            style.id = 'notification-styles';
+            style.textContent = `
+                @keyframes slideInRight {
+                    from { transform: translateX(500px); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                
+                @keyframes progressBar {
+                    from { transform: scaleX(1); }
+                    to { transform: scaleX(0); }
+                }
+                
+                .notification-content {
+                    display: flex;
+                    align-items: center;
+                    padding: 20px;
+                    gap: 15px;
+                }
+                
+                .notification-icon {
+                    font-size: 24px;
+                    flex-shrink: 0;
+                }
+                
+                .notification-message {
+                    flex: 1;
+                    font-weight: 500;
+                    line-height: 1.5;
+                }
+                
+                .notification-close {
+                    background: rgba(255, 255, 255, 0.2);
+                    border: none;
+                    color: white;
+                    width: 28px;
+                    height: 28px;
+                    border-radius: 50%;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-shrink: 0;
+                    transition: all 0.2s ease;
+                }
+                
+                .notification-close:hover {
+                    background: rgba(255, 255, 255, 0.3);
+                    transform: scale(1.1);
+                }
+                
+                @media (max-width: 768px) {
+                    .notification {
+                        right: 10px;
+                        left: 10px;
+                        min-width: auto !important;
+                        max-width: none !important;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
     }
     
     // Animación de contadores en la sección "Sobre Nosotros"

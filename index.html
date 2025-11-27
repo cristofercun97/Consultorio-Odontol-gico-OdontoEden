@@ -155,6 +155,9 @@
                         <a href="#servicios" class="nav-link">Servicios</a>
                     </li>
                     <li class="nav-item">
+                        <a href="#citas" class="nav-link">Agendar Cita</a>
+                    </li>
+                    <li class="nav-item">
                         <a href="#nosotros" class="nav-link">Nosotros</a>
                     </li>
                     <li class="nav-item">
@@ -272,6 +275,209 @@
                     </div>
                     <h3>Cirugía Oral</h3>
                     <p>Procedimientos quirúrgicos especializados realizados con la máxima precisión y seguridad.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección de Citas -->
+    <section id="citas" class="appointments">
+        <div class="container">
+            <h2 class="section-title">Agenda tu Cita</h2>
+            <p class="section-subtitle">Reserva tu cita de forma rápida y sencilla. Elige el horario que mejor se ajuste a ti.</p>
+            
+            <div class="appointments-content">
+                <div class="appointment-info">
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <h3>Horarios Disponibles</h3>
+                        <ul>
+                            <li><i class="fas fa-clock"></i> Lunes a Viernes: 8:00 AM - 6:00 PM</li>
+                            <li><i class="fas fa-clock"></i> Sábados: 9:00 AM - 3:00 PM</li>
+                            <li><i class="fas fa-times-circle"></i> Domingos: Cerrado</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <h3>Información Importante</h3>
+                        <ul>
+                            <li><i class="fas fa-check"></i> Primera consulta incluye evaluación completa</li>
+                            <li><i class="fas fa-check"></i> Llega 10 minutos antes de tu cita</li>
+                            <li><i class="fas fa-check"></i> Trae tu cédula y documentación médica</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-phone-alt"></i>
+                        </div>
+                        <h3>¿Necesitas Ayuda?</h3>
+                        <p>Si tienes dudas o necesitas cambiar tu cita, contáctanos:</p>
+                        <a href="tel:+593958882566" class="contact-link">
+                            <i class="fas fa-phone"></i> 0958882566
+                        </a>
+                        <a href="https://wa.me/+593958882566" target="_blank" class="contact-link whatsapp">
+                            <i class="fab fa-whatsapp"></i> WhatsApp
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="appointment-form-container">
+                    <div class="appointment-methods">
+                        <button class="method-btn active" id="google-calendar-btn" onclick="showGoogleCalendar()">
+                            <i class="fab fa-google"></i>
+                            <span>Google Calendar</span>
+                        </button>
+                        <button class="method-btn" id="whatsapp-btn" onclick="showWhatsAppAppointment()">
+                            <i class="fab fa-whatsapp"></i>
+                            <span>Agendar por WhatsApp</span>
+                        </button>
+                        <button class="method-btn" id="form-btn" onclick="showFormAppointment()">
+                            <i class="fas fa-calendar-plus"></i>
+                            <span>Formulario</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Google Calendar -->
+                    <div id="google-calendar-section" class="appointment-method-content active">
+                        <div class="calendar-info">
+                            <i class="fab fa-google" style="font-size: 3rem; color: #4285f4; margin-bottom: 1rem;"></i>
+                            <h3>Agenda con Google Calendar</h3>
+                            <p>Crea un evento en tu calendario y nosotros lo recibiremos automáticamente.</p>
+                            
+                            <form id="appointment-form-google" class="appointment-form">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Nombre Completo *</label>
+                                        <input type="text" name="name" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Email *</label>
+                                        <input type="email" name="email" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Teléfono *</label>
+                                        <input type="tel" name="phone" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Servicio *</label>
+                                        <select name="service" required>
+                                            <option value="">Selecciona un servicio</option>
+                                            <option value="Consulta General">Consulta General</option>
+                                            <option value="Limpieza Dental">Limpieza Dental</option>
+                                            <option value="Blanqueamiento">Blanqueamiento</option>
+                                            <option value="Ortodoncia">Ortodoncia</option>
+                                            <option value="Implantes">Implantes</option>
+                                            <option value="Endodoncia">Endodoncia</option>
+                                            <option value="Cirugía">Cirugía</option>
+                                            <option value="Odontopediatría">Odontopediatría</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Fecha Preferida *</label>
+                                        <input type="date" name="date" required min="">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Hora Preferida *</label>
+                                        <select name="time" required>
+                                            <option value="">Selecciona una hora</option>
+                                            <option value="08:00">08:00 AM</option>
+                                            <option value="09:00">09:00 AM</option>
+                                            <option value="10:00">10:00 AM</option>
+                                            <option value="11:00">11:00 AM</option>
+                                            <option value="12:00">12:00 PM</option>
+                                            <option value="13:00">01:00 PM</option>
+                                            <option value="14:00">02:00 PM</option>
+                                            <option value="15:00">03:00 PM</option>
+                                            <option value="16:00">04:00 PM</option>
+                                            <option value="17:00">05:00 PM</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>Comentarios adicionales</label>
+                                    <textarea name="notes" rows="3" placeholder="Cuéntanos sobre tu situación..."></textarea>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary btn-large">
+                                    <i class="fab fa-google"></i> Crear Evento en Google Calendar
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- WhatsApp -->
+                    <div id="whatsapp-section" class="appointment-method-content">
+                        <div class="whatsapp-appointment">
+                            <i class="fab fa-whatsapp" style="font-size: 4rem; color: #25d366; margin-bottom: 1rem;"></i>
+                            <h3>Agenda por WhatsApp</h3>
+                            <p>Chatea con nosotros directamente y agenda tu cita de forma personalizada.</p>
+                            <a href="https://wa.me/+593958882566?text=Hola%20OdontoEden,%20me%20gustaría%20agendar%20una%20cita.%20" 
+                               target="_blank" 
+                               class="btn btn-success btn-large"
+                               data-gtm-event="click"
+                               data-gtm-category="Citas"
+                               data-gtm-action="Click Agendar WhatsApp"
+                               data-gtm-label="Botón WhatsApp Citas">
+                                <i class="fab fa-whatsapp"></i> Abrir WhatsApp
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Formulario Simple -->
+                    <div id="form-section" class="appointment-method-content">
+                        <div class="form-appointment">
+                            <i class="fas fa-calendar-alt" style="font-size: 3rem; color: #667eea; margin-bottom: 1rem;"></i>
+                            <h3>Solicitar Cita</h3>
+                            <p>Completa el formulario y te contactaremos para confirmar tu cita.</p>
+                            
+                            <form id="appointment-form-simple" class="appointment-form">
+                                <div class="form-group">
+                                    <input type="text" name="name" placeholder="Nombre completo" required>
+                                </div>
+                                <div class="form-group">
+                                    <input type="tel" name="phone" placeholder="Teléfono" required>
+                                </div>
+                                <div class="form-group">
+                                    <input type="email" name="email" placeholder="Email" required>
+                                </div>
+                                <div class="form-group">
+                                    <select name="service" required>
+                                        <option value="">Selecciona un servicio</option>
+                                        <option value="Consulta General">Consulta General</option>
+                                        <option value="Limpieza Dental">Limpieza Dental</option>
+                                        <option value="Blanqueamiento">Blanqueamiento</option>
+                                        <option value="Ortodoncia">Ortodoncia</option>
+                                        <option value="Implantes">Implantes</option>
+                                        <option value="Endodoncia">Endodoncia</option>
+                                        <option value="Cirugía">Cirugía</option>
+                                        <option value="Odontopediatría">Odontopediatría</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <input type="date" name="date" required min="">
+                                </div>
+                                <div class="form-group">
+                                    <textarea name="message" rows="3" placeholder="Mensaje (opcional)"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-large">
+                                    <i class="fas fa-paper-plane"></i> Enviar Solicitud
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -513,23 +719,30 @@
                 <form class="contact-form" id="contact-form">
                     <h3>Envíanos un mensaje</h3>
                     <div class="form-group">
-                        <input type="text" placeholder="Nombre completo" required>
+                        <input type="text" name="user_name" placeholder="Nombre completo" required>
                     </div>
                     <div class="form-group">
-                        <input type="email" placeholder="Correo electrónico" required>
+                        <input type="email" name="user_email" placeholder="Correo electrónico" required>
                     </div>
                     <div class="form-group">
-                        <input type="tel" placeholder="Teléfono">
+                        <input type="tel" name="user_phone" placeholder="Teléfono">
                     </div>
                     <div class="form-group">
-                        <textarea placeholder="Mensaje" rows="5" required></textarea>
+                        <textarea name="message" placeholder="Mensaje" rows="5" required></textarea>
                     </div>
                     <button type="submit" 
                             class="btn btn-primary"
+                            id="submit-btn"
                             data-gtm-event="submit"
                             data-gtm-category="Formulario"
                             data-gtm-action="Envío Formulario Contacto"
-                            data-gtm-label="Formulario de contacto">Enviar mensaje</button>
+                            data-gtm-label="Formulario de contacto">
+                        <span class="btn-text">Enviar mensaje</span>
+                        <span class="btn-loading" style="display: none;">
+                            <i class="fas fa-spinner fa-spin"></i> Enviando...
+                        </span>
+                    </button>
+                    <div class="form-message" id="form-message" style="display: none;"></div>
                 </form>
             </div>
             
@@ -559,6 +772,7 @@
                     <ul>
                         <li><a href="#inicio">Inicio</a></li>
                         <li><a href="#servicios">Servicios</a></li>
+                        <li><a href="#citas">Agendar Cita</a></li>
                         <li><a href="#nosotros">Nosotros</a></li>
                         <li><a href="#galeria">Galería</a></li>
                         <li><a href="#testimonios">Testimonios</a></li>
@@ -599,7 +813,9 @@
     </a>
 
     <!-- Scripts optimizados para performance -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script src="gtm-events.js" defer></script>
+    <script src="appointments.js" defer></script>
     <script src="script.js" defer></script>
     <script src="google-reviews.js" defer></script>
     
