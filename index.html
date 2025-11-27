@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="es-EC">
 <head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-WSSJ3VX9');</script>
+    <!-- End Google Tag Manager -->
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
@@ -126,6 +134,11 @@
     </script>
 </head>
 <body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WSSJ3VX9"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    
     <!-- Header -->
     <header class="header" id="header">
         <nav class="navbar">
@@ -170,7 +183,13 @@
             <div class="hero-content">
                 <h1 class="hero-title">Bienvenido a OdontoEden</h1>
                 <p class="hero-subtitle">Tu sonrisa es nuestra pasión. Ofrecemos servicios dentales de calidad con tecnología de vanguardia.</p>
-                <a href="https://wa.me/+593958882566?text=Hola%20OdontoEden,%20me%20gustaría%20agendar%20una%20cita" target="_blank" class="btn btn-primary">Agenda tu cita</a>
+                <a href="https://wa.me/+593958882566?text=Hola%20OdontoEden,%20me%20gustaría%20agendar%20una%20cita" 
+                   target="_blank" 
+                   class="btn btn-primary"
+                   data-gtm-event="click"
+                   data-gtm-category="CTA"
+                   data-gtm-action="Click WhatsApp Hero"
+                   data-gtm-label="Agenda tu cita - Hero">Agenda tu cita</a>
             </div>
             <div class="hero-image">
                 <i class="fas fa-tooth hero-icon"></i>
@@ -183,7 +202,11 @@
         <div class="container">
             <h2 class="section-title">Nuestros Servicios</h2>
             <div class="services-grid">
-                <div class="service-card">
+                <div class="service-card" 
+                     data-gtm-event="click"
+                     data-gtm-category="Servicios"
+                     data-gtm-action="Click Servicio"
+                     data-gtm-label="Odontología General">
                     <div class="service-icon">
                         <i class="fas fa-teeth"></i>
                     </div>
@@ -191,7 +214,11 @@
                     <p>Tratamientos preventivos y curativos para mantener tu salud bucal en óptimas condiciones.</p>
                 </div>
                 
-                <div class="service-card">
+                <div class="service-card"
+                     data-gtm-event="click"
+                     data-gtm-category="Servicios"
+                     data-gtm-action="Click Servicio"
+                     data-gtm-label="Estética Dental">
                     <div class="service-icon">
                         <i class="fas fa-smile"></i>
                     </div>
@@ -199,7 +226,11 @@
                     <p>Blanqueamientos, carillas y tratamientos para conseguir la sonrisa perfecta que siempre soñaste.</p>
                 </div>
                 
-                <div class="service-card">
+                <div class="service-card"
+                     data-gtm-event="click"
+                     data-gtm-category="Servicios"
+                     data-gtm-action="Click Servicio"
+                     data-gtm-label="Ortodoncia">
                     <div class="service-icon">
                         <i class="fas fa-user-md"></i>
                     </div>
@@ -207,7 +238,11 @@
                     <p>Brackets tradicionales e invisibles para corregir la posición de tus dientes de forma efectiva.</p>
                 </div>
                 
-                <div class="service-card">
+                <div class="service-card"
+                     data-gtm-event="click"
+                     data-gtm-category="Servicios"
+                     data-gtm-action="Click Servicio"
+                     data-gtm-label="Implantes">
                     <div class="service-icon">
                         <i class="fas fa-tooth"></i>
                     </div>
@@ -215,7 +250,11 @@
                     <p>Reemplaza dientes perdidos con implantes de titanio de última generación y resultados duraderos.</p>
                 </div>
                 
-                <div class="service-card">
+                <div class="service-card"
+                     data-gtm-event="click"
+                     data-gtm-category="Servicios"
+                     data-gtm-action="Click Servicio"
+                     data-gtm-label="Odontopediatría">
                     <div class="service-icon">
                         <i class="fas fa-child"></i>
                     </div>
@@ -223,7 +262,11 @@
                     <p>Cuidado dental especializado para los más pequeños en un ambiente cómodo y familiar.</p>
                 </div>
                 
-                <div class="service-card">
+                <div class="service-card"
+                     data-gtm-event="click"
+                     data-gtm-category="Servicios"
+                     data-gtm-action="Click Servicio"
+                     data-gtm-label="Cirugía Oral">
                     <div class="service-icon">
                         <i class="fas fa-procedures"></i>
                     </div>
@@ -467,7 +510,7 @@
                     </div>
                 </div>
                 
-                <form class="contact-form">
+                <form class="contact-form" id="contact-form">
                     <h3>Envíanos un mensaje</h3>
                     <div class="form-group">
                         <input type="text" placeholder="Nombre completo" required>
@@ -481,7 +524,12 @@
                     <div class="form-group">
                         <textarea placeholder="Mensaje" rows="5" required></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary">Enviar mensaje</button>
+                    <button type="submit" 
+                            class="btn btn-primary"
+                            data-gtm-event="submit"
+                            data-gtm-category="Formulario"
+                            data-gtm-action="Envío Formulario Contacto"
+                            data-gtm-label="Formulario de contacto">Enviar mensaje</button>
                 </form>
             </div>
             
@@ -541,12 +589,17 @@
        class="whatsapp-float" 
        id="whatsapp-button"
        title="Contactar por WhatsApp - OdontoEden Quito"
-       aria-label="Contactar por WhatsApp a OdontoEden">
+       aria-label="Contactar por WhatsApp a OdontoEden"
+       data-gtm-event="click"
+       data-gtm-category="WhatsApp"
+       data-gtm-action="Click WhatsApp Float"
+       data-gtm-label="Botón flotante WhatsApp">
         <i class="fab fa-whatsapp"></i>
         <span class="whatsapp-text">WhatsApp</span>
     </a>
 
     <!-- Scripts optimizados para performance -->
+    <script src="gtm-events.js" defer></script>
     <script src="script.js" defer></script>
     <script src="google-reviews.js" defer></script>
     
