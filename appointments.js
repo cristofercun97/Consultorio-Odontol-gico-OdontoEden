@@ -7,9 +7,11 @@
     'use strict';
 
     // ─────────────────────────────────────────────────────────────────────────
-    // CONFIGURACIÓN — URL del Web App de Google Apps Script
+    // CONFIGURACIÓN — endpoint same-origin servido por Netlify Function.
+    // El proxy server-side (netlify/functions/agendar-cita.js) llama a
+    // Google Apps Script sin restricciones CORS.
     // ─────────────────────────────────────────────────────────────────────────
-    const APPOINTMENTS_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbzuYQqAXu0BcTzywd9Yivsg9EwaQxdEW_ivIbMsJ7xc03nzsFLlL7ZtPwp1hEHEm1nn/exec';
+    const APPOINTMENTS_WEBHOOK_URL = '/.netlify/functions/agendar-cita';
 
     // ─────────────────────────────────────────────────────────────────────────
     // UTILS UI

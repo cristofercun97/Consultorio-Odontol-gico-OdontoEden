@@ -1,0 +1,18 @@
+# Netlify configuration — OdontoEden
+# Docs: https://docs.netlify.com/configure-builds/file-based-configuration/
+
+[build]
+  publish   = "."               # raíz del sitio estático
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"      # bundler moderno, sin necesidad de node_modules
+  node_version = "18"           # Node 18+ tiene fetch global nativo
+
+# Headers de seguridad para todas las páginas
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options       = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy       = "strict-origin-when-cross-origin"
