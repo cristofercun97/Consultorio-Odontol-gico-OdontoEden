@@ -7,11 +7,11 @@
     'use strict';
 
     // ─────────────────────────────────────────────────────────────────────────
-    // CONFIGURACIÓN — endpoint same-origin servido por Netlify Function.
-    // El proxy server-side (netlify/functions/agendar-cita.js) llama a
-    // Google Apps Script sin restricciones CORS.
+    // CONFIGURACIÓN — URL del Web App de Google Apps Script.
+    // El fetch usa Content-Type: text/plain para evitar el preflight CORS
+    // (simple request). Apps Script parsea el body como JSON igualmente.
     // ─────────────────────────────────────────────────────────────────────────
-    const APPOINTMENTS_WEBHOOK_URL = '/.netlify/functions/agendar-cita';
+    const APPOINTMENTS_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbzuYQqAXu0BcTzywd9Yivsg9EwaQxdEW_ivIbMsJ7xc03nzsFLlL7ZtPwp1hEHEm1nn/exec';
 
     // ─────────────────────────────────────────────────────────────────────────
     // UTILS UI
@@ -108,11 +108,14 @@
         }
 
         // ── fetch al Web App ──────────────────────────────────────────────────
+        // Content-Type: text/plain convierte esto en una "simple request" CORS.
+        // El navegador NO lanza preflight OPTIONS. Apps Script recibe el body
+        // en e.postData.contents y lo parsea con JSON.parse() normalmente.
         try {
             const response = await fetch(APPOINTMENTS_WEBHOOK_URL, {
-                method:  'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body:    JSON.stringify(payload)
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain' },
+                body:   JSON.stringify(payload)
             });
 
             let result = null;
@@ -256,7 +259,7 @@
         try {
             const response = await fetch(APPOINTMENTS_WEBHOOK_URL, {
                 method:  'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'text/plain' },
                 body:    JSON.stringify(payload)
             });
 
