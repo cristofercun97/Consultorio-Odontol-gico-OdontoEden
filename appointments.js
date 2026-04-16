@@ -135,12 +135,7 @@
             //   { "success": false, "error": "Campo requerido faltante: email" }
 
             if (result.success) {
-                if (typeof showNotification === 'function') {
-                    showNotification(
-                        '✅ ¡Cita agendada! Revisa tu correo — recibirás la confirmación con los detalles.',
-                        'success'
-                    );
-                }
+                showAppointmentToast(payload);
                 console.log('✅ Evento creado en Google Calendar:', result.eventId);
                 if (typeof window.dataLayer !== 'undefined') {
                     window.dataLayer.push({
@@ -242,6 +237,176 @@
     // Uso: abrir DevTools (F12) → Console → ejecutar: testAppointmentFlow()
     // NO hay botón en UI. No afecta el formulario real.
     // ─────────────────────────────────────────────────────────────────────────
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // TOAST DE CONFIRMACIÓN DE CITA
+    // Aparece cuando el Web App confirma éxito. Muestra los detalles
+    // del turno reservado y se cierra solo a los 8 segundos.
+    // ─────────────────────────────────────────────────────────────────────────
+
+    function showAppointmentToast(data) {
+        // Eliminar toast anterior si existe
+        const prev = document.getElementById('appointment-toast');
+        if (prev) prev.remove();
+
+        // Formatear fecha legible
+        const dateLabel = data.preferredDate
+            ? new Date(data.preferredDate + 'T00:00:00').toLocaleDateString('es-EC', {
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+              })
+            : data.preferredDate;
+
+        const toast = document.createElement('div');
+        toast.id = 'appointment-toast';
+        toast.innerHTML = `
+            <div class="apt-toast-header">
+                <span class="apt-toast-icon">&#x1F9B7;</span>
+                <span class="apt-toast-title">¡Cita confirmada!</span>
+                <button class="apt-toast-close" aria-label="Cerrar">&times;</button>
+            </div>
+            <div class="apt-toast-body">
+                <p class="apt-toast-greeting">Hola, <strong>${data.fullName}</strong></p>
+                <ul class="apt-toast-details">
+                    <li><span class="apt-td-label">&#x1F9B7; Servicio</span><span class="apt-td-value">${data.service}</span></li>
+                    <li><span class="apt-td-label">&#x1F4C5; Fecha</span><span class="apt-td-value">${dateLabel}</span></li>
+                    <li><span class="apt-td-label">&#x23F0; Hora</span><span class="apt-td-value">${data.preferredTime} (Ecuador)</span></li>
+                    <li><span class="apt-td-label">&#x1F4E7; Correo</span><span class="apt-td-value">${data.email}</span></li>
+                </ul>
+                <p class="apt-toast-note">Revisa tu correo — recibirás la invitación de Google Calendar.</p>
+            </div>
+            <div class="apt-toast-bar"></div>
+        `;
+
+        // Inyectar estilos una sola vez
+        if (!document.getElementById('apt-toast-styles')) {
+            const s = document.createElement('style');
+            s.id = 'apt-toast-styles';
+            s.textContent = `
+                #appointment-toast {
+                    position: fixed;
+                    bottom: 24px;
+                    right: 24px;
+                    width: 340px;
+                    background: #fff;
+                    border-radius: 16px;
+                    box-shadow: 0 12px 48px rgba(0,0,0,.18);
+                    overflow: hidden;
+                    z-index: 99999;
+                    font-family: inherit;
+                    transform: translateY(120%);
+                    opacity: 0;
+                    transition: transform .45s cubic-bezier(.34,1.56,.64,1), opacity .35s ease;
+                }
+                #appointment-toast.apt-show {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+                .apt-toast-header {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: #fff;
+                    padding: 14px 16px;
+                }
+                .apt-toast-icon { font-size: 22px; }
+                .apt-toast-title {
+                    flex: 1;
+                    font-weight: 700;
+                    font-size: 16px;
+                    letter-spacing: .3px;
+                }
+                .apt-toast-close {
+                    background: rgba(255,255,255,.2);
+                    border: none;
+                    color: #fff;
+                    width: 26px;
+                    height: 26px;
+                    border-radius: 50%;
+                    cursor: pointer;
+                    font-size: 16px;
+                    line-height: 1;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: background .2s;
+                }
+                .apt-toast-close:hover { background: rgba(255,255,255,.35); }
+                .apt-toast-body {
+                    padding: 16px 18px 12px;
+                }
+                .apt-toast-greeting {
+                    margin: 0 0 12px;
+                    font-size: 14px;
+                    color: #374151;
+                }
+                .apt-toast-details {
+                    list-style: none;
+                    margin: 0 0 12px;
+                    padding: 0;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 7px;
+                }
+                .apt-toast-details li {
+                    display: flex;
+                    justify-content: space-between;
+                    font-size: 13px;
+                    border-bottom: 1px solid #f3f4f6;
+                    padding-bottom: 6px;
+                }
+                .apt-toast-details li:last-child { border-bottom: none; padding-bottom: 0; }
+                .apt-td-label { color: #6b7280; font-weight: 500; }
+                .apt-td-value { color: #111827; font-weight: 600; text-align: right; max-width: 180px; }
+                .apt-toast-note {
+                    margin: 0;
+                    font-size: 12px;
+                    color: #6b7280;
+                    background: #f9fafb;
+                    border-radius: 8px;
+                    padding: 8px 10px;
+                }
+                .apt-toast-bar {
+                    height: 4px;
+                    background: linear-gradient(90deg, #667eea, #764ba2);
+                    transform-origin: left;
+                    animation: aptProgress 8s linear forwards;
+                }
+                @keyframes aptProgress {
+                    from { transform: scaleX(1); }
+                    to   { transform: scaleX(0); }
+                }
+                @media (max-width: 480px) {
+                    #appointment-toast {
+                        right: 12px;
+                        left: 12px;
+                        width: auto;
+                        bottom: 16px;
+                    }
+                }
+            `;
+            document.head.appendChild(s);
+        }
+
+        document.body.appendChild(toast);
+
+        // Animar entrada
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => toast.classList.add('apt-show'));
+        });
+
+        // Cerrar al pulsar X
+        toast.querySelector('.apt-toast-close').addEventListener('click', () => closeToast(toast));
+
+        // Cerrar automático a los 8 segundos
+        const timer = setTimeout(() => closeToast(toast), 8000);
+
+        function closeToast(el) {
+            clearTimeout(timer);
+            el.classList.remove('apt-show');
+            setTimeout(() => { if (el.parentNode) el.parentNode.removeChild(el); }, 450);
+        }
+    }
 
     window.testAppointmentFlow = async function () {
         console.log('🧪 Iniciando test interno de citas...');
