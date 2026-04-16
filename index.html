@@ -288,42 +288,48 @@
             
             <div class="appointments-content">
                 <div class="appointment-info">
-                    <div class="info-card">
-                        <div class="info-icon">
-                            <i class="fas fa-calendar-check"></i>
+                    <div class="info-card info-card-compact">
+                        <div class="compact-grid">
+                            <div class="compact-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <div>
+                                    <strong>Dirección</strong>
+                                    <p>Av. Eloy Alfaro y Alemania, Edf. Pirámide 1</p>
+                                </div>
+                            </div>
+                            
+                            <div class="compact-item">
+                                <i class="fas fa-phone"></i>
+                                <div>
+                                    <strong>Teléfono</strong>
+                                    <p><a href="tel:+593958882566">0958882566</a></p>
+                                </div>
+                            </div>
+                            
+                            <div class="compact-item">
+                                <i class="fas fa-envelope"></i>
+                                <div>
+                                    <strong>Email</strong>
+                                    <p><a href="mailto:odontoedenuio@gmail.com">odontoedenuio@gmail.com</a></p>
+                                </div>
+                            </div>
+                            
+                            <div class="compact-item">
+                                <i class="fas fa-clock"></i>
+                                <div>
+                                    <strong>Horarios</strong>
+                                    <p>Lun - Vie: 8:00 AM - 6:00 PM<br>Sáb: 9:00 AM - 3:00 PM | Dom: Cerrado</p>
+                                </div>
+                            </div>
+                            
+                            <div class="compact-item">
+                                <i class="fas fa-globe"></i>
+                                <div>
+                                    <strong>Sitio Web</strong>
+                                    <p><a href="https://www.odontoeden.com" target="_blank">www.odontoeden.com</a></p>
+                                </div>
+                            </div>
                         </div>
-                        <h3>Horarios Disponibles</h3>
-                        <ul>
-                            <li><i class="fas fa-clock"></i> Lunes a Viernes: 8:00 AM - 6:00 PM</li>
-                            <li><i class="fas fa-clock"></i> Sábados: 9:00 AM - 3:00 PM</li>
-                            <li><i class="fas fa-times-circle"></i> Domingos: Cerrado</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="info-card">
-                        <div class="info-icon">
-                            <i class="fas fa-info-circle"></i>
-                        </div>
-                        <h3>Información Importante</h3>
-                        <ul>
-                            <li><i class="fas fa-check"></i> Primera consulta incluye evaluación completa</li>
-                            <li><i class="fas fa-check"></i> Llega 10 minutos antes de tu cita</li>
-                            <li><i class="fas fa-check"></i> Trae tu cédula y documentación médica</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="info-card">
-                        <div class="info-icon">
-                            <i class="fas fa-phone-alt"></i>
-                        </div>
-                        <h3>¿Necesitas Ayuda?</h3>
-                        <p>Si tienes dudas o necesitas cambiar tu cita, contáctanos:</p>
-                        <a href="tel:+593958882566" class="contact-link">
-                            <i class="fas fa-phone"></i> 0958882566
-                        </a>
-                        <a href="https://wa.me/+593958882566" target="_blank" class="contact-link whatsapp">
-                            <i class="fab fa-whatsapp"></i> WhatsApp
-                        </a>
                     </div>
                 </div>
                 
@@ -347,8 +353,8 @@
                     <div id="google-calendar-section" class="appointment-method-content active">
                         <div class="calendar-info">
                             <i class="fab fa-google" style="font-size: 3rem; color: #4285f4; margin-bottom: 1rem;"></i>
-                            <h3>Agenda con Google Calendar</h3>
-                            <p>Crea un evento en tu calendario y nosotros lo recibiremos automáticamente.</p>
+                            <h3>Agenda tu Cita</h3>
+                            <p>Completa el formulario y la cita se creará directamente en nuestro calendario. Recibirás una confirmación por correo electrónico.</p>
                             
                             <form id="appointment-form-google" class="appointment-form">
                                 <div class="form-row">
@@ -412,7 +418,7 @@
                                 </div>
                                 
                                 <button type="submit" class="btn btn-primary btn-large">
-                                    <i class="fab fa-google"></i> Crear Evento en Google Calendar
+                                    <i class="fas fa-calendar-check"></i> Agendar Cita
                                 </button>
                             </form>
                         </div>
@@ -814,9 +820,9 @@
 
     <!-- Scripts optimizados para performance -->
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script src="gtm-events.js" defer></script>
-    <script src="appointments.js" defer></script>
-    <script src="script.js" defer></script>
+    <script src="gtm-events.js?v=2" defer></script>
+    <script src="appointments.js?v=2" defer></script>
+    <script src="script.js?v=2" defer></script>
     <script src="google-reviews.js" defer></script>
     
     <!-- Schema.org LocalBusiness adicional -->

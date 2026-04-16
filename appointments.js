@@ -1,256 +1,298 @@
 // Sistema de Agendamiento de Citas - OdontoEden
-// Google Calendar Integration & Appointment Management
+// Integración real con Google Calendar vía Google Apps Script Web App.
+// El frontend NO abre ninguna URL de Google Calendar manualmente.
+// La cita se crea en el calendario del consultorio server-side.
 
-(function() {
+(function () {
     'use strict';
 
-    // Configurar fecha mínima (hoy)
+    // ─────────────────────────────────────────────────────────────────────────
+    // CONFIGURACIÓN — URL del Web App de Google Apps Script
+    // ─────────────────────────────────────────────────────────────────────────
+    const APPOINTMENTS_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbzuYQqAXu0BcTzywd9Yivsg9EwaQxdEW_ivIbMsJ7xc03nzsFLlL7ZtPwp1hEHEm1nn/exec';
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // UTILS UI
+    // ─────────────────────────────────────────────────────────────────────────
+
     function setupDateInputs() {
-        const dateInputs = document.querySelectorAll('input[type="date"]');
         const today = new Date().toISOString().split('T')[0];
-        
-        dateInputs.forEach(input => {
+        document.querySelectorAll('input[type="date"]').forEach(input => {
             input.setAttribute('min', today);
         });
     }
 
-    // Cambiar entre métodos de agendamiento
-    window.showGoogleCalendar = function() {
-        switchMethod('google-calendar');
-    };
+    function formatDate(dateString) {
+        const date = new Date(dateString + 'T00:00:00');
+        return date.toLocaleDateString('es-EC', {
+            weekday: 'long',
+            year:    'numeric',
+            month:   'long',
+            day:     'numeric'
+        });
+    }
 
-    window.showWhatsAppAppointment = function() {
-        switchMethod('whatsapp');
-    };
+    // ─────────────────────────────────────────────────────────────────────────
+    // CAMBIO DE MÉTODO (botones del selector de agendamiento)
+    // ─────────────────────────────────────────────────────────────────────────
 
-    window.showFormAppointment = function() {
-        switchMethod('form');
-    };
+    window.showGoogleCalendar    = () => switchMethod('google-calendar');
+    window.showWhatsAppAppointment = () => switchMethod('whatsapp');
+    window.showFormAppointment   = () => switchMethod('form');
 
     function switchMethod(method) {
-        // Actualizar botones
-        document.querySelectorAll('.method-btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
+        document.querySelectorAll('.method-btn').forEach(btn => btn.classList.remove('active'));
         document.getElementById(`${method}-btn`)?.classList.add('active');
 
-        // Actualizar contenido
-        document.querySelectorAll('.appointment-method-content').forEach(content => {
-            content.classList.remove('active');
-        });
+        document.querySelectorAll('.appointment-method-content').forEach(c => c.classList.remove('active'));
         document.getElementById(`${method}-section`)?.classList.add('active');
 
-        // GTM Event
         if (typeof window.dataLayer !== 'undefined') {
             window.dataLayer.push({
-                'event': 'appointment_method_change',
-                'eventCategory': 'Citas',
-                'eventAction': 'Cambio de Método',
-                'eventLabel': method
+                event:         'appointment_method_change',
+                eventCategory: 'Citas',
+                eventAction:   'Cambio de Método',
+                eventLabel:    method
             });
         }
     }
 
-    // Formulario de Google Calendar
+    // ─────────────────────────────────────────────────────────────────────────
+    // FORMULARIO PRINCIPAL DE CITAS
+    // Envía los datos al Web App de Google Apps Script.
+    // NO abre ninguna pestaña de Google Calendar.
+    // ─────────────────────────────────────────────────────────────────────────
+
     const googleForm = document.getElementById('appointment-form-google');
     if (googleForm) {
-        googleForm.addEventListener('submit', function(e) {
+        googleForm.addEventListener('submit', function (e) {
             e.preventDefault();
-
-            const formData = new FormData(this);
-            const data = {
-                name: formData.get('name'),
-                email: formData.get('email'),
-                phone: formData.get('phone'),
-                service: formData.get('service'),
-                date: formData.get('date'),
-                time: formData.get('time'),
-                notes: formData.get('notes') || ''
-            };
-
-            // Crear evento de Google Calendar
-            createGoogleCalendarEvent(data);
+            submitAppointment(this);
         });
     }
 
-    // Crear evento en Google Calendar
-    function createGoogleCalendarEvent(data) {
-        // Combinar fecha y hora
-        const dateTime = `${data.date}T${data.time}:00`;
-        const startDate = new Date(dateTime);
-        const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // 1 hora después
+    async function submitAppointment(form) {
+        const submitBtn      = form.querySelector('button[type="submit"]');
+        const originalBtnHTML = submitBtn ? submitBtn.innerHTML : null;
 
-        // Formatear fechas para Google Calendar
-        const startISO = startDate.toISOString().replace(/-|:|\.\d\d\d/g, '');
-        const endISO = endDate.toISOString().replace(/-|:|\.\d\d\d/g, '');
-
-        // Crear título y descripción
-        const title = `OdontoEden - ${data.service}`;
-        const description = `
-Paciente: ${data.name}
-Teléfono: ${data.phone}
-Email: ${data.email}
-Servicio: ${data.service}
-${data.notes ? `\nNotas: ${data.notes}` : ''}
-
----
-OdontoEden - Tu sonrisa es nuestra pasión
-Av. Eloy Alfaro y Alemania, Edf. Pirámide 1
-Teléfono: 0958882566
-        `.trim();
-
-        const location = 'OdontoEden - Av. Eloy Alfaro y Alemania, Edf. Pirámide 1, Quito';
-
-        // Crear URL de Google Calendar
-        const googleCalendarUrl = new URL('https://calendar.google.com/calendar/render');
-        googleCalendarUrl.searchParams.append('action', 'TEMPLATE');
-        googleCalendarUrl.searchParams.append('text', title);
-        googleCalendarUrl.searchParams.append('dates', `${startISO}/${endISO}`);
-        googleCalendarUrl.searchParams.append('details', description);
-        googleCalendarUrl.searchParams.append('location', location);
-        googleCalendarUrl.searchParams.append('ctz', 'America/Guayaquil');
-
-        // Guardar cita localmente
-        saveAppointment({
-            ...data,
-            id: Date.now(),
-            timestamp: new Date().toISOString(),
-            status: 'pending',
-            method: 'google_calendar'
-        });
-
-        // Enviar evento GTM
-        if (typeof window.dataLayer !== 'undefined') {
-            window.dataLayer.push({
-                'event': 'appointment_created',
-                'eventCategory': 'Citas',
-                'eventAction': 'Cita Creada - Google Calendar',
-                'eventLabel': data.service,
-                'appointmentDate': data.date
-            });
+        // Mostrar estado de carga en el botón
+        if (submitBtn) {
+            submitBtn.disabled  = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Agendando...';
         }
 
-        // Mostrar notificación y abrir Google Calendar
-        if (typeof showNotification === 'function') {
-            showNotification('✅ Abriendo Google Calendar. Guarda el evento para confirmar tu cita.', 'success');
-        }
+        // Construir payload con los nombres de campo reales del formulario HTML
+        const fd = new FormData(form);
+        const payload = {
+            fullName:      (fd.get('name')    || '').trim(),
+            email:         (fd.get('email')   || '').trim(),
+            phone:         (fd.get('phone')   || '').trim(),
+            service:       (fd.get('service') || '').trim(),
+            preferredDate: (fd.get('date')    || '').trim(),  // "YYYY-MM-DD"
+            preferredTime: (fd.get('time')    || '').trim(),  // "HH:MM"
+            comments:      (fd.get('notes')   || '').trim()
+        };
 
-        // Abrir en nueva pestaña
-        window.open(googleCalendarUrl.toString(), '_blank');
-
-        // Limpiar formulario
-        googleForm.reset();
-
-        // Enviar notificación por WhatsApp (opcional)
-        setTimeout(() => {
-            const confirmWhatsApp = confirm('¿Deseas confirmar tu cita también por WhatsApp?');
-            if (confirmWhatsApp) {
-                sendWhatsAppAppointment(data);
+        // ── Validación frontend antes de llamar al servidor ───────────────────
+        if (!payload.fullName || !payload.email || !payload.phone || !payload.service || !payload.preferredDate || !payload.preferredTime) {
+            if (typeof showNotification === 'function') {
+                showNotification('❌ Por favor completa todos los campos obligatorios.', 'error');
             }
-        }, 2000);
+            if (submitBtn && originalBtnHTML) {
+                submitBtn.disabled  = false;
+                submitBtn.innerHTML = originalBtnHTML;
+            }
+            return;
+        }
+
+        // ── fetch al Web App ──────────────────────────────────────────────────
+        try {
+            const response = await fetch(APPOINTMENTS_WEBHOOK_URL, {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify(payload)
+            });
+
+            let result = null;
+            try {
+                result = await response.json();
+            } catch (e) {
+                throw new Error('Respuesta inválida del servidor (no es JSON).');
+            }
+
+            if (!response.ok) {
+                throw new Error('Error HTTP: ' + response.status);
+            }
+
+            // Forma del response exitoso:
+            //   { "success": true,  "message": "Cita agendada correctamente.", "eventId": "abc123" }
+            // Forma del response con error:
+            //   { "success": false, "error": "Campo requerido faltante: email" }
+
+            if (result.success) {
+                if (typeof showNotification === 'function') {
+                    showNotification(
+                        '✅ ¡Cita agendada! Revisa tu correo — recibirás la confirmación con los detalles.',
+                        'success'
+                    );
+                }
+                console.log('✅ Evento creado en Google Calendar:', result.eventId);
+                if (typeof window.dataLayer !== 'undefined') {
+                    window.dataLayer.push({
+                        event:           'appointment_created',
+                        eventCategory:   'Citas',
+                        eventAction:     'Cita Creada - Google Calendar Real',
+                        eventLabel:      payload.service,
+                        appointmentDate: payload.preferredDate
+                    });
+                }
+                form.reset();
+            } else {
+                const msg = result.error || result.message || 'Ocurrió un error al agendar la cita.';
+                if (typeof showNotification === 'function') {
+                    showNotification(
+                        `❌ ${msg} Por favor intenta de nuevo o contáctanos por WhatsApp.`,
+                        'error'
+                    );
+                }
+                console.error('Error del Web App:', result);
+            }
+
+        } catch (err) {
+            // Falla de red o el Web App no está disponible
+            console.error('Error de red al agendar cita:', err);
+            if (typeof showNotification === 'function') {
+                showNotification(
+                    '❌ No se pudo conectar con el servidor. Verifica tu conexión e intenta de nuevo.',
+                    'error'
+                );
+            }
+        } finally {
+            if (submitBtn && originalBtnHTML) {
+                submitBtn.disabled  = false;
+                submitBtn.innerHTML = originalBtnHTML;
+            }
+        }
     }
 
-    // Formulario simple de citas
+    // ─────────────────────────────────────────────────────────────────────────
+    // FORMULARIO SIMPLE (método "Formulario")
+    // Canal secundario de contacto; no requiere hora exacta.
+    // Sigue siendo un formulario local + opción WhatsApp.
+    // ─────────────────────────────────────────────────────────────────────────
+
     const simpleForm = document.getElementById('appointment-form-simple');
     if (simpleForm) {
-        simpleForm.addEventListener('submit', function(e) {
+        simpleForm.addEventListener('submit', function (e) {
             e.preventDefault();
-
-            const formData = new FormData(this);
+            const fd = new FormData(this);
             const data = {
-                name: formData.get('name'),
-                email: formData.get('email'),
-                phone: formData.get('phone'),
-                service: formData.get('service'),
-                date: formData.get('date'),
-                message: formData.get('message') || ''
+                name:    fd.get('name')    || '',
+                email:   fd.get('email')   || '',
+                phone:   fd.get('phone')   || '',
+                service: fd.get('service') || '',
+                date:    fd.get('date')    || '',
+                message: fd.get('message') || ''
             };
 
-            // Guardar cita
-            saveAppointment({
-                ...data,
-                id: Date.now(),
-                timestamp: new Date().toISOString(),
-                status: 'pending',
-                method: 'form'
-            });
-
-            // Enviar evento GTM
             if (typeof window.dataLayer !== 'undefined') {
                 window.dataLayer.push({
-                    'event': 'appointment_request',
-                    'eventCategory': 'Citas',
-                    'eventAction': 'Solicitud de Cita - Formulario',
-                    'eventLabel': data.service
+                    event:         'appointment_request',
+                    eventCategory: 'Citas',
+                    eventAction:   'Solicitud de Cita - Formulario',
+                    eventLabel:    data.service
                 });
             }
 
-            // Mostrar notificación
             if (typeof showNotification === 'function') {
-                showNotification('✅ ¡Solicitud enviada! Te contactaremos pronto para confirmar tu cita.', 'success');
+                showNotification(
+                    '✅ ¡Solicitud enviada! Te contactaremos pronto para confirmar tu cita.',
+                    'success'
+                );
             }
 
-            // Limpiar formulario
             this.reset();
 
-            // Opcional: Enviar por WhatsApp
+            // Ofrecer confirmación por WhatsApp (canal secundario, no Google Calendar)
             setTimeout(() => {
-                const whatsappMessage = `Hola OdontoEden, soy ${data.name}. Me gustaría agendar una cita para ${data.service} el día ${formatDate(data.date)}. Mi teléfono es ${data.phone}.`;
-                const whatsappURL = `https://wa.me/+593958882566?text=${encodeURIComponent(whatsappMessage)}`;
-                
-                const sendWhatsApp = confirm('¿Deseas enviar esta solicitud también por WhatsApp?');
-                if (sendWhatsApp) {
-                    window.open(whatsappURL, '_blank');
+                const msg = `Hola OdontoEden, soy ${data.name}. Me gustaría agendar una cita para ${data.service} el día ${formatDate(data.date)}. Mi teléfono es ${data.phone}.`;
+                if (confirm('¿Deseas enviar esta solicitud también por WhatsApp?')) {
+                    window.open(`https://wa.me/+593958882566?text=${encodeURIComponent(msg)}`, '_blank');
                 }
             }, 1500);
         });
     }
 
-    // Enviar cita por WhatsApp
-    function sendWhatsAppAppointment(data) {
-        const message = `Hola OdontoEden, soy ${data.name}.
+    // ─────────────────────────────────────────────────────────────────────────
+    // INIT
+    // ─────────────────────────────────────────────────────────────────────────
 
-📅 Quiero confirmar mi cita:
-- Servicio: ${data.service}
-- Fecha: ${formatDate(data.date)}
-- Hora: ${data.time}
-- Teléfono: ${data.phone}
-- Email: ${data.email}
-${data.notes ? `\nNotas: ${data.notes}` : ''}
-
-¡Gracias!`;
-
-        const whatsappURL = `https://wa.me/+593958882566?text=${encodeURIComponent(message)}`;
-        window.open(whatsappURL, '_blank');
-    }
-
-    // Guardar cita en LocalStorage
-    function saveAppointment(appointment) {
-        try {
-            const appointments = JSON.parse(localStorage.getItem('odontoeden_appointments') || '[]');
-            appointments.push(appointment);
-            localStorage.setItem('odontoeden_appointments', JSON.stringify(appointments));
-            console.log('✅ Cita guardada:', appointment);
-        } catch (error) {
-            console.error('Error guardando cita:', error);
-        }
-    }
-
-    // Formatear fecha
-    function formatDate(dateString) {
-        const date = new Date(dateString + 'T00:00:00');
-        return date.toLocaleDateString('es-EC', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-    }
-
-    // Inicializar
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         setupDateInputs();
-        console.log('✅ Sistema de citas inicializado');
+        console.log('✅ Sistema de citas inicializado — Google Apps Script backend');
     });
 
-})();
+    // ─────────────────────────────────────────────────────────────────────────
+    // TEST INTERNO — solo para validar el flujo en producción desde DevTools.
+    // Uso: abrir DevTools (F12) → Console → ejecutar: testAppointmentFlow()
+    // NO hay botón en UI. No afecta el formulario real.
+    // ─────────────────────────────────────────────────────────────────────────
+
+    window.testAppointmentFlow = async function () {
+        console.log('🧪 Iniciando test interno de citas...');
+
+        const payload = {
+            fullName:      'Test Usuario',
+            email:         'cristofercun.webdev@gmail.com',
+            phone:         '613681611',
+            service:       'Limpieza Dental',
+            preferredDate: '2026-04-18',
+            preferredTime: '10:00',
+            comments:      'Test automático desde frontend'
+        };
+
+        try {
+            const response = await fetch(APPOINTMENTS_WEBHOOK_URL, {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify(payload)
+            });
+
+            console.log('📡 Response status:', response.status);
+
+            let result;
+            try {
+                result = await response.json();
+            } catch (err) {
+                throw new Error('❌ La respuesta no es JSON válido');
+            }
+
+            console.log('📦 Response body:', result);
+
+            if (result.success) {
+                console.log('✅ TEST OK - Evento creado:', result.eventId);
+                if (typeof showNotification === 'function') {
+                    showNotification(
+                        '🧪 Test exitoso: cita creada correctamente en Google Calendar',
+                        'success'
+                    );
+                }
+            } else {
+                console.error('❌ TEST FALLÓ:', result);
+                if (typeof showNotification === 'function') {
+                    showNotification(
+                        '❌ Test fallido: ' + (result.error || result.message),
+                        'error'
+                    );
+                }
+            }
+
+        } catch (error) {
+            console.error('🚨 ERROR EN TEST:', error);
+            if (typeof showNotification === 'function') {
+                showNotification('🚨 Error en test: ' + error.message, 'error');
+            }
+        }
+    };
+
+}());
