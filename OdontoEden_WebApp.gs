@@ -317,3 +317,28 @@ function json(out, obj) {
   return out;
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// TEST — Ejecutar manualmente desde el IDE para autorizar MailApp
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Prueba de correo de confirmación.
+ * Selecciona esta función en el menú del IDE y haz clic en ▶ Ejecutar.
+ * La primera vez pedirá autorización para enviar correo — acéptala.
+ * Luego crea un nuevo deployment para que el Web App use los nuevos permisos.
+ *
+ * IMPORTANTE: Cambia TEST_EMAIL por tu email real antes de ejecutar.
+ */
+function testEnviarCorreo() {
+  var TEST_EMAIL = 'odontoeden.uio@gmail.com'; // ← cambia por tu email para la prueba
+  var startDate  = new Date('2026-04-25T10:00:00-05:00');
+  enviarCorreoConfirmacion({
+    fullName: 'Paciente Prueba',
+    email:    TEST_EMAIL,
+    service:  'Limpieza dental',
+    phone:    '0999999999',
+    comments: ''
+  }, startDate);
+  Logger.log('testEnviarCorreo: finalizado — revisa ' + TEST_EMAIL);
+}
+
