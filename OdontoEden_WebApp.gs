@@ -196,7 +196,108 @@ function crearCita(data) {
     ' | servicio=' + service
   );
 
+  // Envío del correo personalizado en try/catch independiente.
+  // Si falla, se registra en logs pero NO interrumpe ni revierte la cita ya creada.
+  try {
+    enviarCorreoConfirmacion({
+      fullName: fullName,
+      email:    email,
+      service:  service,
+      phone:    phone,
+      comments: comments
+    }, startDate);
+  } catch (mailErr) {
+    Logger.log('Correo personalizado no enviado (cita creada igualmente): ' + mailErr.message);
+  }
+
   return evento.getId();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CORREO PERSONALIZADO DE CONFIRMACIÓN
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Envía un correo de confirmación personalizado al paciente con MailApp.
+ * Se llama después de crear el evento en Calendar.
+ * Los errores que genere NO deben propagarse al caller — usar try/catch externo.
+ *
+ * @param {Object} data       Datos del paciente (fullName, email, service, phone, comments).
+ * @param {Date}   startDate  Fecha/hora de inicio del evento ya creado.
+ */
+function enviarCorreoConfirmacion(data, startDate) {
+  // Nombres de días y meses en español para America/Guayaquil
+  var DIAS   = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  var MESES  = ['enero','febrero','marzo','abril','mayo','junio',
+                'julio','agosto','septiembre','octubre','noviembre','diciembre'];
+
+  var diaSemana = Utilities.formatDate(startDate, TIMEZONE, 'EEEE'); // inglés nativo de Apps Script
+  var diaNombre = DIAS[parseInt(Utilities.formatDate(startDate, TIMEZONE, 'u'), 10) % 7];
+  var diaNum    = Utilities.formatDate(startDate, TIMEZONE, 'd');
+  var mesNombre = MESES[parseInt(Utilities.formatDate(startDate, TIMEZONE, 'M'), 10) - 1];
+  var anio      = Utilities.formatDate(startDate, TIMEZONE, 'yyyy');
+  var hora      = Utilities.formatDate(startDate, TIMEZONE, 'HH:mm');
+
+  var fechaLegible = diaNombre + ', ' + diaNum + ' de ' + mesNombre + ' de ' + anio;
+
+  var asunto = 'Confirmación de cita - OdontoEden';
+
+  // ── Versión texto plano ───────────────────────────────────────────────────
+  var body = [
+    'Hola ' + data.fullName + ',',
+    '',
+    'Tu cita ha sido confirmada correctamente en OdontoEden.',
+    '',
+    'Detalle de tu cita:',
+    '  - Tipo de cita : ' + data.service,
+    '  - Día          : ' + diaNombre,
+    '  - Fecha        : ' + fechaLegible,
+    '  - Hora         : ' + hora,
+    '',
+    'Dirección:',
+    '  ' + CONSULTORIO.direccion,
+    '',
+    'Gracias por escoger a OdontoEden.',
+    'Será un placer atenderte.',
+    '',
+    'Equipo OdontoEden',
+    CONSULTORIO.telefono
+  ].join('\n');
+
+  // ── Versión HTML ──────────────────────────────────────────────────────────
+  var htmlBody = '<div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;color:#1f2937">'
+    + '<div style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);padding:28px 32px;border-radius:12px 12px 0 0;text-align:center">'
+    +   '<h1 style="margin:0;color:#fff;font-size:22px;letter-spacing:.5px">🦷 OdontoEden</h1>'
+    +   '<p style="margin:6px 0 0;color:rgba(255,255,255,.85);font-size:14px">' + CONSULTORIO.eslogan + '</p>'
+    + '</div>'
+    + '<div style="background:#fff;padding:28px 32px;border:1px solid #e5e7eb;border-top:none">'
+    +   '<p style="font-size:16px;margin:0 0 16px">Hola, <strong>' + data.fullName + '</strong></p>'
+    +   '<p style="margin:0 0 20px;color:#374151">Tu cita ha sido <strong>confirmada correctamente</strong>. Aquí tienes el resumen:</p>'
+    +   '<table style="width:100%;border-collapse:collapse;font-size:14px">'
+    +     '<tr style="background:#f9fafb"><td style="padding:10px 14px;color:#6b7280;width:40%">🦷 Tipo de cita</td><td style="padding:10px 14px;font-weight:600">' + data.service + '</td></tr>'
+    +     '<tr><td style="padding:10px 14px;color:#6b7280">📅 Día</td><td style="padding:10px 14px;font-weight:600">' + diaNombre + '</td></tr>'
+    +     '<tr style="background:#f9fafb"><td style="padding:10px 14px;color:#6b7280">🗓️ Fecha</td><td style="padding:10px 14px;font-weight:600">' + fechaLegible + '</td></tr>'
+    +     '<tr><td style="padding:10px 14px;color:#6b7280">⏰ Hora</td><td style="padding:10px 14px;font-weight:600">' + hora + '</td></tr>'
+    +   '</table>'
+    +   '<div style="margin:20px 0;padding:14px 16px;background:#f3f4f6;border-radius:8px;font-size:13px;color:#374151">'
+    +     '<strong>📍 Dirección</strong><br>' + CONSULTORIO.direccion
+    +   '</div>'
+    +   '<p style="margin:20px 0 8px;color:#374151">Gracias por escoger a <strong>OdontoEden</strong>.<br>Será un placer atenderte.</p>'
+    + '</div>'
+    + '<div style="background:#f9fafb;padding:16px 32px;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 12px 12px;text-align:center">'
+    +   '<p style="margin:0;font-size:12px;color:#9ca3af">Equipo OdontoEden &nbsp;·&nbsp; ' + CONSULTORIO.telefono + '</p>'
+    + '</div>'
+    + '</div>';
+
+  MailApp.sendEmail({
+    to:       data.email,
+    subject:  asunto,
+    body:     body,
+    htmlBody: htmlBody,
+    name:     'OdontoEden'
+  });
+
+  Logger.log('Correo personalizado enviado a: ' + data.email);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
