@@ -11,7 +11,7 @@
     // El fetch usa Content-Type: text/plain para evitar el preflight CORS
     // (simple request). Apps Script parsea el body como JSON igualmente.
     // ─────────────────────────────────────────────────────────────────────────
-    const APPOINTMENTS_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbzuYQqAXu0BcTzywd9Yivsg9EwaQxdEW_ivIbMsJ7xc03nzsFLlL7ZtPwp1hEHEm1nn/exec';
+    const APPOINTMENTS_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbzRmPDz6W5OYNkXe_6PTL23fdbnYcUU2b8G0NS_WSKBYT5U7YRNrs90DujKkBJ7h3Fb/exec';
 
     // ─────────────────────────────────────────────────────────────────────────
     // UTILS UI
