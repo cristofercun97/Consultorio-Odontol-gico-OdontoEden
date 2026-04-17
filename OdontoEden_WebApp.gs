@@ -199,6 +199,7 @@ function crearCita(data) {
   // Envío del correo personalizado en try/catch independiente.
   // Si falla, se registra en logs pero NO interrumpe ni revierte la cita ya creada.
   try {
+    Logger.log('Intentando enviar correo personalizado a: ' + email);
     enviarCorreoConfirmacion({
       fullName: fullName,
       email:    email,
@@ -206,8 +207,9 @@ function crearCita(data) {
       phone:    phone,
       comments: comments
     }, startDate);
+    Logger.log('Correo personalizado enviado correctamente a: ' + email);
   } catch (mailErr) {
-    Logger.log('Correo personalizado no enviado (cita creada igualmente): ' + mailErr.message);
+    Logger.log('Error enviando correo personalizado a ' + email + ': ' + mailErr.message);
   }
 
   return evento.getId();
